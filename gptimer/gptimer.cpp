@@ -1,6 +1,6 @@
 /**
  * \file      gptimer.cpp
- * \author    Rogerio Alves Cardoso
+ * \author    Jainesh Doshi
  *
  *            The ArchC Team
  *            http://www.archc.org/
@@ -11,7 +11,7 @@
  *
  * \version   0.1
  *
- * \brief     Implements the Gaisler Timer Unit (GPTimer)
+ * \brief     Implements the Timer Unit
  *
  *
  *   This library is free software; you can redistribute it and/or
@@ -37,16 +37,16 @@ gptimer::gptimer(sc_module_name module_name, uint32_t freq):
 
   target_export( *this );
 
-  timers = new LEON3_timers[NUM_TIMERS];
+  timers = new atlas_timers[NUM_TIMERS];
   configuration_reg = GPTIMER_CONFIG_REG_PATTERN;
  
-  //!50HZ
+  // TODO 50HZ??
   prescalar.prescalar_reload = freq - 1;
   prescalar.prescalar_value  = prescalar.prescalar_reload;
 
   //!Reset all timers
   for (int i = 0; i < NUM_TIMERS; i++){
-    timers[i].control = 0x0;
+      timers[i].control = 0x0;
     timers[i].counter = 0x0ffff;
     timers[i].reload  = 0x0ffff;
   }
@@ -70,7 +70,6 @@ void gptimer::decrement_timer() {
 }
 
 //!Once tick is generated all timers are decremented
-//!No Chaining mode support yet
 inline void gptimer::timer_tick(){
 
   for( uint32_t id = 0; id < NUM_TIMERS; id++ )
@@ -105,6 +104,7 @@ inline void gptimer::generate_interrupt( uint32_t id )
   request.type = WRITE;
   request.data = (id + BASE_IRQ);
   request.addr = IRQ_SEND_ADDR;
+  //TODO check Device ID
   request.dev_id = 0x77;
 
   response = IRQ_port->transport(request);
@@ -150,7 +150,7 @@ ac_tlm_rsp_status gptimer::gptimer_write(const uint32_t &a, const uint32_t &d){
     default:
       break;
   }
-  //Thanks QEMU team!
+
   id = (internal_address - TIMER_BASE) / TIMER_BASE;
   timer_addr = internal_address % TIMER_BASE;
 

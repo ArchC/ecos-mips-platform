@@ -1,22 +1,21 @@
 # ####################################################
-# General Purpose Timer Unit (GPTimer) IP
+# TLM memory with TLM interface (ArchC 2x compliant)
 # ####################################################
 
 TARGET=gptimer
-INC_DIR += -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH)
 
 SRCS := gptimer.cpp
 OBJS := $(SRCS:.cpp=.o)
 
 #------------------------------------------------------
-##.SILENT:
+.SILENT:
 #------------------------------------------------------
 .SUFFIXES: .cc .cpp .o
 #------------------------------------------------------
 lib: all
 	ar r lib$(TARGET).a $(OBJS)
 #------------------------------------------------------
-all: $(OBJS)
+all: $(OBJS) gptimer.h
 #------------------------------------------------------
 clean:
 	rm -f $(OBJS) *~ *.o *.a
@@ -28,4 +27,3 @@ distclean: clean
 #------------------------------------------------------
 .cc.o:
 	$(CC) $(CFLAGS) $(INC_DIR) -c $<
-

@@ -12,36 +12,73 @@
  * http://www.lsc.ic.unicamp.br                       *
  ******************************************************/
  
-// Rodolfo editou aqui
-//
+
+
 const char *project_name="mips";
 const char *project_file="mips1.ac";
 const char *archc_version="2.0beta1";
 const char *archc_options="-abi -dy ";
 
 #include <systemc.h>
-#include "mips.H"
-#include "memory.h"
-#include "bus.h"
+#include "mips/mips.H"
+#include "mmu/mmu.h"
+#include "memory/memory.h"
+#include "bus/bus.h"
+#include "gptimer/gptimer.h"
+#include "irqmp/irqmp.h"
+
+using grlib::gptimer;
+using grlib::irqmp;
 
 int sc_main(int ac, char *av[])
 {
+  // Clock
+  sc_clock p_clock("p_clock", 4, SC_NS);
 
   //!  ISA simulator
+  cout << "Creating Processor" << endl;
   mips mips_proc1("mips");
+  //! mmu
+  cout << "Creating mmu" << endl;
+  ac_tlm_mmu mmu("mmu");
   //! Bus
+  cout << "Creating Bus routing system" << endl;
   ac_tlm_bus bus("bus");
-// Memory
+  //! Memory
+  cout << "Creating Memory" << endl;
   ac_tlm_mem mem("mem");
+  //! GPtimer Frequency 40Hz
+  cout << "Creating Timer" << endl;
+  gptimer timer("timer",40);
+  //! Interrupt Control Unit
+  cout << "Creating Interrupt Controller" << endl;
+  irqmp irq("irq");
+
+  // Clock connections with Peripherals
+  timer.clk(p_clock);
+  irq.clk(p_clock);
+
+  // CPU interrupt port
+  irq.CPU_port[0](mips_proc1.intp);
+
+  // Peripherals connected to Interrupt Controller by ports
+  timer.IRQ_port(irq.target_export);
+
 
 #ifdef AC_DEBUG
   ac_trace("mips1_proc1.trace");
 #endif 
 
-  mips_proc1.DM_port(bus.target_export);
+  mips_proc1.DM(mmu.target_export);
+  mips_proc1.ack_port(irq.target_export);
+  mmu.BUS_port(bus.target_export);
   bus.MEM_port(mem.target_export);
+  bus.GPTIMER_port(timer.target_export);
+  bus.IRQ_port(irq.target_export);
+
 
   mips_proc1.init(ac, av);
+  mips_proc1.set_prog_args();
   cerr << endl;
 
   sc_start();
