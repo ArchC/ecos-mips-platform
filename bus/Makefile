@@ -3,7 +3,6 @@
 # ####################################################
 
 TARGET=bus
-INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
 SRCS := bus.cpp
 OBJS := $(SRCS:.cpp=.o)

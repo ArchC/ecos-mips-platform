@@ -12,7 +12,7 @@
  * @version   0.1
  * @date      Sun, 02 Apr 2006 08:07:46 -0200
  *
- * @brief     Implements a ac_tlm memory.
+ * @brief     Implements a ac_tlm bus.
  *
  * @attention Copyright (C) 2002-2005 --- The ArchC Team
  *
@@ -43,7 +43,9 @@
 ac_tlm_bus::ac_tlm_bus(sc_module_name module_name):
   sc_module(module_name),
   target_export("iport"),
-  MEM_port("MEM_port", 5242880U) // This is the memory port, assigned for 5MB
+  MEM_port("MEM_port", 536870912U), // This is the memory port, assigned for 512MB
+  GPTIMER_port("GPTIMER_port", 0U),  // Port that connects to the timer unit
+  IRQ_port("IRQ_port", 0U)
 {
     /// Binds target_export to the memory
     target_export(*this);
@@ -58,15 +60,14 @@ ac_tlm_bus::~ac_tlm_bus()
 /// This is the transport method. Everything should go through this file.
 /// To connect more components, you will need to have an if/then/else or a switch
 /// statement inside this method. Notice that ac_tlm_req has an address field.
-ac_tlm_rsp ac_tlm_bus::transport(const ac_tlm_req &request) 
+ac_tlm_rsp ac_tlm_bus::transport(const ac_tlm_req &request)
 {
-    ac_tlm_rsp response;
-    
+  ac_tlm_rsp response;
+  /// MEMORY REQUEST
+  if(request.addr >= 0x00000000 && request.addr < 0x80000000){
     response = MEM_port->transport(request);
-
     return response;
+  } else {
+    cerr<<"\n Error:trying to access address outside of allowed memory : " << request.addr << endl;
+  }
 }
-
-
-
-

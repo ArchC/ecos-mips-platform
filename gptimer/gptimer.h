@@ -1,6 +1,6 @@
 /**
  * \file      gptimer.h
- * \author    Rogerio Alves Cardoso
+ * \author    Jainesh Doshi
  *
  *            The ArchC Team
  *            http://www.archc.org/
@@ -11,7 +11,7 @@
  *
  * \version   0.1
  *
- * \brief     Implements the Gaisler Timer Unit (GPTimer)
+ * \brief     Implements the Timer Unit
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
@@ -35,23 +35,21 @@
 #include "ac_tlm_port.H"
 
 //!Number of timers
-#define NUM_TIMERS 4
+#define NUM_TIMERS 1
 
 #define GPTIMER_CONFIG_REG_PATTERN  0x342
 #define GPTIMER_CONTROL_REG_PATTERN 0x3 
 
-//!FIXME: pass this as argument to constructor
+//! TODO: pass this as argument to constructor
 #define BASE_IRQ 0x8
 #define IRQ_SEND_ADDR 0x80000204
 
-//!Control Register masks
+//TODO Check !Control Register masks
 #define GPTIMER_ENABLE_MASK      (1 << 0)
 #define GPTIMER_RESTART_MASK     (1 << 1)
 #define GPTIMER_LOAD_MASK        (1 << 2)
 #define GPTIMER_INT_ENABLE_MASK  (1 << 3)
 #define GPTIMER_INT_PENDING_MASK (1 << 4)
-#define GPTIMER_CHAIN_MASK       (1 << 5) /* Not supported */
-#define GPTIMER_DEBUG_HALT_MASK  (1 << 6) /* Not supported */
 
 #define TIMER_BASE 0x10
 
@@ -61,7 +59,8 @@
 typedef struct{
   int prescalar_value; //!< Prescalar Value Register
   unsigned int prescalar_reload; //!< Prescalar Reload Register
-}LEON3_prescalar_regs;
+}atlas_prescaler_regs;
+
 
 /**
  * \brief Timer Unit
@@ -70,17 +69,22 @@ typedef struct{
   int counter;         //!< Value Register
   unsigned int reload; //!< Reload Register
   unsigned int control;//!< Control Register
-}LEON3_timers;
+}atlas_timers;
 
 using tlm::tlm_transport_if;
 
 namespace grlib
 {
-class gptimer : 
+
+class gptimer :
 public sc_module,
 public ac_tlm_transport_if
 {
 private:
+
+  atlas_timers *timers;
+  atlas_prescaler_regs prescalar;
+  uint32_t configuration_reg;
 
   /**
    * \brief Decrements the prescalar register by one on each clock cycle
@@ -92,10 +96,6 @@ private:
    * \brief Generates a tick every time the prescalar register underflows
    */
   inline void timer_tick();
-
-  LEON3_timers *timers;
-  LEON3_prescalar_regs prescalar;
-  uint32_t configuration_reg;
 
 public:
 

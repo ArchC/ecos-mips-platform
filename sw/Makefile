@@ -2,7 +2,9 @@
 # Hello World
 # ####################################################
 
-CC = mips-elf-gcc
+#CC = mips-elf-gcc
+#changed as this option was given in path
+CC = mips-newlib-elf-gcc
 CFLAGS = -msoft-float -specs=archc
 LDFLAGS = -lm
 
