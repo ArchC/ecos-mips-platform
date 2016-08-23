@@ -1,0 +1,6 @@
+[submodule "ArchC"]
+	path = ArchC
+	url = https://github.com/jaineshdoshi/ArchC
+[submodule "SystemC"]
+	path = SystemC
+	url = https://github.com/ArchC/SystemC.git
