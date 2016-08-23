@@ -1359,30 +1359,6 @@ void ac_behavior( msubs )
   dbg_printf("Result = %f\n", res);
 }
 
-// Coprocessor0 Registers Read/Write functions
-
-void ac_behavior( mfc0 )
-{
-  dbg_printf("mfc0 r%d, cp0r%d, sel%d\n", rt, rd, sel);
-  RB[rt] = C0_RB[rd*8+sel];
-  dbg_printf("Result = 0x%X\n", RB[rt]);
-}
-
-void ac_behavior( mtc0 )
-{
-  dbg_printf("mtc0 r%d, cp0r%d, sel%d \n", rt, rd, sel);
-  if(rd == 12 && sel==0)
-  {
-    C0_RB[rd*8+sel] = RB[rt];
-    //! Disable Interrupts EI in Statsu Register is set to 0
-    C0_RB[12*8 + 0] = C0_RB[12*8 + 0] & (0xFFFFFFFE);
-  }
-  else
-  {
-    C0_RB[rd*8+sel] = RB[rt];
-  }
-  dbg_printf("Result = 0x%X\n", C0_RB[rd*8+sel]);
-}
 
 void ac_behavior( deret )
 {
@@ -1439,6 +1415,33 @@ void ac_behavior( eret )
   dbg_printf("Returned PC = %#x\n", temp);
 }
 
+
+// Coprocessor0 Registers Read/Write functions
+
+void ac_behavior( mfc0 )
+{
+  dbg_printf("mfc0 r%d, cp0r%d, sel%d\n", rt, rd, sel);
+  RB[rt] = C0_RB[rd*8+sel];
+  dbg_printf("Result = 0x%X\n", RB[rt]);
+}
+
+void ac_behavior( mtc0 )
+{
+  dbg_printf("mtc0 r%d, cp0r%d, sel%d \n", rt, rd, sel);
+  if(rd == 12 && sel==0)
+  {
+    C0_RB[rd*8+sel] = RB[rt];
+    //! Disable Interrupts EI in Statsu Register is set to 0
+    C0_RB[12*8 + 0] = C0_RB[12*8 + 0] & (0xFFFFFFFE);
+  }
+  else
+  {
+    C0_RB[rd*8+sel] = RB[rt];
+  }
+  dbg_printf("Result = 0x%X\n", C0_RB[rd*8+sel]);
+}
+
+
 void ac_behavior( cache )
 {
   dbg_printf("cache sub-opcode=%d, base_reg=r%d, offset=%d\n", rs, rt, imm & 0xFFFF);
@@ -1464,20 +1467,18 @@ void ac_behavior( cache )
 }
 
 
-/*
-uint32_t Address_Translation(uint32_t virtual_address){
- //! Done by MMU in this case
- uint32_t physical_address = virtual_address;
- return physical_address;
-}
-*/
-/*
-int sign_extend(int16_t number) {
- int value = (0x0000FFFF & number);
- int mask = 0x00008000;
- if (mask & number) {
-   value += 0xFFFF0000;
- }
- return value;
-}
-*/
+
+//uint32_t Address_Translation(uint32_t virtual_address){
+//  //! Done by MMU in this case
+//  uint32_t physical_address = virtual_address;
+//  return physical_address;
+//}
+
+//int sign_extend(int16_t number) {
+//  int value = (0x0000FFFF & number);
+//  int mask = 0x00008000;
+//  if (mask & number) {
+//    value += 0xFFFF0000;
+//  }
+//  return value;
+//}

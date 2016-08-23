@@ -113,7 +113,8 @@ void mips_syscall::set_prog_args(int argc, char **argv)
   uint32_t *guest_stack = (uint32_t *) malloc(sizeof(uint32_t) *
                                               guest_stack_size);
   uint32_t i = 0, j = 0;
-  uint32_t strtable = AC_RAM_END - 512 - procNumber * 64 * 1024;
+  uint32_t strtable = AC_RAM_END - 512 - procNumber * 64 * 1024 + 0x80000000;
+//  uint32_t strtable = AC_RAM_END - 512 - procNumber * 64 * 1024;
   guest_stack[i++] = argc;
   for (uint32_t k = 0; k < argc; ++k) {
     uint32_t len = strlen(argv[k]) + 1;

@@ -39,7 +39,7 @@
 
 // Standard includes
 // SystemC includes
-#include <systemc>
+#include <systemc.h>
 // ArchC includes
 #include "ac_tlm_protocol.H"
 

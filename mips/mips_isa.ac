@@ -67,8 +67,6 @@ AC_ISA(mips){
 
   // FPU instructions - mips32r2
   ac_instr<Type_R> mfhc1, mthc1, ldxc1, sdxc1, lwxc1, swxc1;
-
-  // Coprocessor 0 Register Access Instructions
   ac_instr<Type_C> mfc0, mtc0;
 
   // gas MIPS specific register names

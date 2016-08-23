@@ -5,27 +5,29 @@ SRCS := main.cpp
 OBJS := $(SRCS:.cpp=.o)
 COMPONENTS := mips memory bus
 
-export LIB_DIR:= `pkg-config --libs systemc` `pkg-config --libs archc`\
-				$(foreach c, $(COMPONENTS), -L $(c))
 
 
 export INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` `pkg-config --cflags tlm` \
-					$(foreach c, $(COMPONENTS), -I $(c)) 
+						$(foreach c, $(COMPONENTS), -I $(c)) 
 
-export LIBS:= $(foreach c, $(COMPONENTS), -l$(c)) -lsystemc -larchc -lm
+export LIB_DIR := -L. `pkg-config --libs systemc`  \
+						$(foreach c, $(COMPONENTS), -L $(c) -l$(c)) 
+						
 
-export LIBFILES:= $(foreach c, $(COMPONENTS), $(c)/lib$(c).a)
+export LIB_SYSTEMC := `pkg-config --libs systemc`
+export LIB_ARCHC := `pkg-config --libs archc`
+export LIBS := $(LIB_SYSTEMC) $(LIB_DIR) $(LIB_ARCHC)
+export OTHER := -std=c++11  -DAC_GUEST_BIG_ENDIAN  -Wno-deprecated
 
-export CFLAGS:=-g
+export CFLAGS:=-g -O2 $(OTHER)
 
-export CC:=g++
-
+export CC:=g++ 
 
 all: 
 	for c in $(COMPONENTS); do echo " => Making" $$c ...; \
 	    cd $$c; $(MAKE); cd ..; done
 	echo " => Making platform ..."
-	$(MAKE) $(EXE)
+	$(MAKE) $(EXE) 
 
 clean:
 	for c in $(COMPONENTS); do echo " => Cleaning" $$c ...; \
@@ -39,15 +41,15 @@ clean:
 .SUFFIXES: .cc .cpp .o .x
 #------------------------------------------------------
 $(EXE): $(OBJS) $(LIBFILES)
-	$(CC) $(CFLAGS) $(INC_DIR) $(LIB_DIR) -o $(EXE) $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(INC_DIR) -o $(EXE) $(OBJS) $(LIBS)
 #------------------------------------------------------
 main.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c main.cpp
+	$(CC) $(CFLAGS) $(INC_DIR) -c main.cpp 
 #------------------------------------------------------
 #all: $(EXE)
 #------------------------------------------------------
 run: $(EXE)
-	./$(EXE) --load=sw/hello_world.mips
+	./$(EXE) -- sw/hello_custom.elf
 #------------------------------------------------------
 #------------------------------------------------------
 distclean: clean
