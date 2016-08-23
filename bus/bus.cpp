@@ -61,21 +61,12 @@ ac_tlm_bus::~ac_tlm_bus()
 /// statement inside this method. Notice that ac_tlm_req has an address field.
 ac_tlm_rsp ac_tlm_bus::transport(const ac_tlm_req &request)
 {
-    ac_tlm_rsp response;
-
-   	//! MEMORY REQUEST in kernel mode of the system
-   	//! Memory above 0x80000000 is mapped to 0x00000000 in this mode 
-    if(request.addr >= 0x80000000)
-    {
-		ac_tlm_req req = request;
-    	req.addr = request.addr - 0x80000000;
-       	// cerr<<"Address to bus: "<< hex << req.addr << endl;
-        response = MEM_port->transport(req);
-       	// response = MEM_port->transport(request);
-        return response;
-    }
-    else
-    {
-        cerr<<"\n Error:trying to access address outside of memory : "<< hex << request.addr << endl;
-    }
+  ac_tlm_rsp response;
+  /// MEMORY REQUEST
+  if(request.addr >= 0x00000000 && request.addr < 0x80000000){
+    response = MEM_port->transport(request);
+    return response;
+  } else {
+    cerr<<"\n Error:trying to access address outside of allowed memory : " << request.addr << endl;
+  }
 }

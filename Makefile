@@ -3,7 +3,7 @@ EXE = $(TARGET).x
 
 SRCS := main.cpp
 OBJS := $(SRCS:.cpp=.o)
-COMPONENTS := mips memory bus
+COMPONENTS := mips memory bus mmu
 
 
 
