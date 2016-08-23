@@ -1,6 +1,6 @@
 /**
- * @file      memory.cpp
- * @author    Bruno de Carvalho Albertini
+ * @file      mmu.cpp
+ * @author    Jainesh Doshi
  *
  * @author    The ArchC Team
  *            http://www.archc.org/
@@ -9,8 +9,8 @@
  *            IC-UNICAMP
  *            http://www.lsc.ic.unicamp.br/
  *
- * @version   0.1
- * @date      Sun, 02 Apr 2006 08:07:46 -0200
+ * @version   1.0
+ * @date      
  *
  * @brief     Implements a ac_tlm Memory Management Unit.
  *
