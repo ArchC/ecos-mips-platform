@@ -1373,3 +1373,57 @@ void ac_behavior( mtc0 )
   dbg_printf("Result = 0x%X\n", C0_RB[rd*8+sel]);
 }
 
+void ac_behavior( deret )
+{
+  dbg_printf("deret");
+//  Debug register DM bit set to 0
+  C0_RB[23*8 + 0] = (C0_RB[23*8 + 0]) & (0 << 30);
+//  Debug register IEXI bit set to 0
+  C0_RB[23*8 + 0] = (C0_RB[23*8 + 0]) & (0 << 20);
+#ifndef NO_NEED_PC_UPDATE
+  npc = C0_RB[24*8 + 0];
+#endif
+
+// set EXL bit of CRB's Status register to 0 -- check if needed
+  dbg_printf("New PC = %#x\n", C0_RB[24*8]);
+}
+
+void ac_behavior( eret )
+{
+  dbg_printf("eret");
+//  Status register ERL bit
+  bool Status_ERL = (C0_RB[12*8 + 0]) & (1 << 2) ? '1' : '0';
+//  Status register EXL bit
+  bool Status_EXL = (C0_RB[12*8 + 0]) & (1 << 1) ? '1' : '0';
+//  SRSCtl register HSS value is non zero
+  int SRSCtl_HSS = ((C0_RB[12*8 + 2]) & (15 << 26))>>26;
+//  Status register BEV bit
+  bool Status_BEV = (C0_RB[12*8 + 0]) & (1 << 22) ? '1' : '0';
+//  SRSCtl register CSS value
+  uint32_t SRSCtl_CSS = (C0_RB[12*8 + 2]) & (15 << 0);
+//  SRSCtl register PSS value
+  uint32_t SRSCtl_PSS = ((C0_RB[12*8 + 2]) & (15 << 6))>>6;
+
+
+  uint32_t Error_EPC = C0_RB[30*8 + 0];
+  uint32_t temp;
+  uint32_t EPC = C0_RB[14*8 + 0];
+  if(Status_ERL == 1){
+    temp = Error_EPC;
+    Status_ERL = 0;
+    C0_RB[12*8 + 0] = (C0_RB[12*8 + 0]) | (1 << 2);
+  } else {
+    temp = EPC;
+    Status_EXL = 0;
+    C0_RB[12 * 8 + 0] = (C0_RB[12 * 8 + 0]) | (1 << 1);
+    if ((SRSCtl_HSS > 0) && (Status_BEV == 0)) {
+      SRSCtl_CSS = SRSCtl_PSS;
+      C0_RB[12 * 8 + 2] = (C0_RB[12 * 8 + 2]) & (0xFFFFFFF0 << 0);
+      C0_RB[12 * 8 + 2] = (C0_RB[12 * 8 + 2]) | (SRSCtl_CSS << 0);
+    }
+  }
+#ifndef NO_NEED_PC_UPDATE
+  npc = temp;
+#endif
+  dbg_printf("Returned PC = %#x\n", temp);
+}

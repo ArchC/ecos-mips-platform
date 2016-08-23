@@ -34,7 +34,7 @@ AC_ISA(mips){
   ac_instr<Type_R> jr, jalr;
   ac_instr<Type_I> beq, bne, blez, bgtz, bltz, bgez, bltzal, bgezal;
   ac_instr<Type_R> instr_break;
-  ac_instr<Type_S> sys_call;
+  ac_instr<Type_S> sys_call, eret, deret;
 
   // mips-II
   ac_instr<Type_R> sync, teq;
@@ -583,6 +583,12 @@ AC_ISA(mips){
 
     swxc1.set_asm("swxc1 %freg, %reg (%reg)", rd, rt, rs);
     swxc1.set_decoder(op=0x13, shamt=0, func=0x08);
+
+    eret.set_asm("eret %imm", code);
+    eret.set_decoder(op=0x10, func=0x18);
+
+    deret.set_asm("deret %imm", code);
+    deret.set_decoder(op=0x10, func=0x1f);
 
     pseudo_instr("li %reg, %imm") {
       "lui %0, \%hi(%1)";

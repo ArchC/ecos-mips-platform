@@ -30,7 +30,7 @@ all:
 clean:
 	for c in $(COMPONENTS); do echo " => Making" $$c ...; \
 	    cd $$c; $(MAKE) clean; cd ..; done	
-	echo " => Making platform ..."
+	echo " => Cleaning platform ..."
 	rm -f $(OBJS) $(EXE) *~ *.o
 
 #------------------------------------------------------
