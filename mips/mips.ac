@@ -22,7 +22,7 @@
 
 AC_ARCH(mips){
 
-  ac_mem   DM:512M;
+  ac_tlm_port DM:512M;
   ac_regbank RB:32;
   ac_regbank RBF:32;
   ac_reg npc;
