@@ -1,0 +1,3 @@
+[submodule "ArchC"]
+	path = ArchC
+	url = https://github.com/jaineshdoshi/ArchC
