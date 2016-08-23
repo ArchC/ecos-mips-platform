@@ -1,12 +1,9 @@
-
-
 TARGET=platform
 EXE = $(TARGET).x
 
 SRCS := main.cpp
 OBJS := $(SRCS:.cpp=.o)
 COMPONENTS := mips memory bus
-HOST_OS := linux64
 
 export LIB_DIR:= `pkg-config --libs systemc` `pkg-config --libs archc`\
 				$(foreach c, $(COMPONENTS), -L $(c))

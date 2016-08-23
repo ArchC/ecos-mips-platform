@@ -45,7 +45,7 @@ public:
   int cur_instr_id;
 
 
-    #include "mips_isa_helper.H"
+#include "mips_isa_helper.H"
   
   //!Constructor.
   mips_isa(mips_arch& ref) : mips_arch_ref(ref) , syscall(ref) {
@@ -69,6 +69,7 @@ public:
   inline __attribute__((always_inline)) void _behavior_mips_Type_I(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
   inline __attribute__((always_inline)) void _behavior_mips_Type_J(uint8_t op, uint32_t addr);
   inline __attribute__((always_inline)) void _behavior_mips_Type_S(uint8_t op, uint32_t code, uint8_t func);
+  inline __attribute__((always_inline)) void _behavior_mips_Type_C(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t constant, uint8_t sel);
 
   inline __attribute__((always_inline)) void behavior_lb(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
   inline __attribute__((always_inline)) void behavior_lbu(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
@@ -208,6 +209,8 @@ public:
   inline __attribute__((always_inline)) void behavior_sdxc1(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t shamt, uint8_t func);
   inline __attribute__((always_inline)) void behavior_lwxc1(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t shamt, uint8_t func);
   inline __attribute__((always_inline)) void behavior_swxc1(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t shamt, uint8_t func);
+  inline __attribute__((always_inline)) void behavior_mfc0(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t constant, uint8_t sel);
+  inline __attribute__((always_inline)) void behavior_mtc0(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t constant, uint8_t sel);
 
 };
 };

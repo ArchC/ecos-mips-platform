@@ -44,7 +44,7 @@
 ac_tlm_bus::ac_tlm_bus(sc_module_name module_name):
   sc_module(module_name),
   target_export("iport"),
-  MEM_port("MEM_port", 5242880U) // This is the memory port, assigned for 5MB
+  MEM_port("MEM_port", 536870912U) // This is the memory port, assigned for 5MB
 {
     /// Binds target_export to the memory
     target_export(*this);

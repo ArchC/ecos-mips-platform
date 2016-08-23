@@ -1,31 +1,37 @@
 /**
  * @file      mips_isa.cpp
- * @author    Jainesh Doshi
+ * @author    Sandro Rigo
+ *            Marcus Bartholomeu
+ *            Alexandro Baldassin (acasm information)
+ *            Jainesh Doshi
  *
- * @author    The ArchC Team
+ *            The ArchC Team
  *            http://www.archc.org/
  *
  *            Computer Systems Laboratory (LSC)
  *            IC-UNICAMP
  *            http://www.lsc.ic.unicamp.br/
  *
- * @version   0.1
- * @date      Sun, 02 Apr 2006 08:07:46 -0200
- *
+ * @version   1.0
+ * @date      Thu, 29 Jun 2006 14:49:08 -0300
+ * 
  * @brief     The ArchC MIPS functional model.
- *
- * @attention Copyright (C) 2002-2005 --- The ArchC Team
- *
- *   This library is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Lesser General Public
- *   License as published by the Free Software Foundation; either
- *   version 2.1 of the License, or (at your option) any later version.
- *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Lesser General Public License for more details.
- *
+ * 
+ * @attention Copyright (C) 2002-2006 --- The ArchC Team
+ * 
+ * This program is free software; you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation; either version 2 of the License, or 
+ * (at your option) any later version. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * GNU General Public License for more details. 
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with this program; if not, write to the Free Software 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -34,7 +40,7 @@
 #include  "mips_bhv_macros.H"
 
 //If you want debug information for this model, uncomment next line
-//#define DEBUG_MODEL
+#define DEBUG_MODEL
 #include "ac_debug_model.H"
 
 //!User defined macros to reference registers.
@@ -51,7 +57,7 @@ static int processors_started = 0;
 // Generic instruction behavior method.
 void ac_behavior( instruction )
 {
-   dbg_printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
+  dbg_printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
   npc = ac_pc + 4;
@@ -63,17 +69,21 @@ void ac_behavior( Type_R ){}
 void ac_behavior( Type_I ){}
 void ac_behavior( Type_J ){}
 void ac_behavior( Type_S ){}
+void ac_behavior( Type_C ){}
 
 // Behavior called before starting simulation
 void ac_behavior(begin)
 {
   dbg_printf("@@@ begin behavior @@@\n");
   npc = ac_pc + 4;
-
   for (int regNum = 0; regNum < 32; regNum ++)
     RB[regNum] = 0;
   hi = 0;
   lo = 0;
+
+//! Disable Interrupts EI in Statsu Register is set to 0
+  C0_RB[12*8 + 0] = C0_RB[12*8 + 0] & (0xFFFFFFFE);
+
 }
 
 // Behavior called after finishing simulation
@@ -446,6 +456,7 @@ void ac_behavior( mtc1 )
 {
   dbg_printf("mtc1 %%%d, %%f%d\n", rt, rd);
   RBF[rd] = RB[rt];
+  dbg_printf("Result = %f\n", (float)RBF[rd]);
 }
 
 void ac_behavior( negd )
@@ -656,7 +667,7 @@ void ac_behavior( slti )
   // Set the RD if RS< IMM
   if( (ac_Sword) RB[rs] < (ac_Sword) imm )
     RB[rt] = 1;
-  // Else reset RD
+    // Else reset RD
   else
     RB[rt] = 0;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -668,7 +679,7 @@ void ac_behavior( sltiu )
   // Set the RD if RS< IMM
   if( (ac_Uword) RB[rs] < (ac_Uword) imm )
     RB[rt] = 1;
-  // Else reset RD
+    // Else reset RD
   else
     RB[rt] = 0;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -747,7 +758,7 @@ void ac_behavior( slt )
   // Set the RD if RS< RT
   if( (ac_Sword) RB[rs] < (ac_Sword) RB[rt] )
     RB[rd] = 1;
-  // Else reset RD
+    // Else reset RD
   else
     RB[rd] = 0;
   dbg_printf("Result = %#x\n", RB[rd]);
@@ -759,7 +770,7 @@ void ac_behavior( sltu )
   // Set the RD if RS < RT
   if( RB[rs] < RB[rt] )
     RB[rd] = 1;
-  // Else reset RD
+    // Else reset RD
   else
     RB[rd] = 0;
   dbg_printf("Result = %#x\n", RB[rd]);
@@ -1111,7 +1122,7 @@ void ac_behavior( sys_call )
 
 void ac_behavior( instr_break )
 {
-  fprintf(stderr, "instr_break behavior not implemented.\n"); 
+  fprintf(stderr, "End of Program.\n");
   exit(EXIT_FAILURE);
 }
 
@@ -1336,3 +1347,29 @@ void ac_behavior( msubs )
   save_float(res, shamt);
   dbg_printf("Result = %f\n", res);
 }
+
+// Coprocessor0 Registers Read/Write functions
+
+void ac_behavior( mfc0 )
+{
+  dbg_printf("mfc0 r%d, cp0r%d, sel%d\n", rt, rd, sel);
+  RB[rt] = C0_RB[rd*8+sel];
+  dbg_printf("Result = 0x%X\n", RB[rt]);
+}
+
+void ac_behavior( mtc0 )
+{
+  dbg_printf("mtc0 r%d, cp0r%d, sel%d \n", rt, rd, sel);
+  if(rd == 12 && sel==0)
+  {
+    C0_RB[rd*8+sel] = RB[rt];
+    //! Disable Interrupts EI in Statsu Register is set to 0
+    C0_RB[12*8 + 0] = C0_RB[12*8 + 0] & (0xFFFFFFFE);
+  }
+  else
+  {
+    C0_RB[rd*8+sel] = RB[rt];
+  }
+  dbg_printf("Result = 0x%X\n", C0_RB[rd*8+sel]);
+}
+

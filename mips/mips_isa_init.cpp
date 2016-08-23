@@ -31,14 +31,21 @@ ac_dec_field mips_parms::mips_isa::fields[mips_parms::AC_DEC_FIELD_NUMBER] = {
   {"addr", 26, 31, 8, 0, 0, NULL},
   {"op", 6, 5, 1, 0, 0, &(mips_parms::mips_isa::fields[13])},
   {"code", 20, 25, 9, 0, 0, &(mips_parms::mips_isa::fields[14])},
-  {"func", 6, 31, 6, 0, 0, NULL}
+  {"func", 6, 31, 6, 0, 0, NULL},
+  {"op", 6, 5, 1, 0, 0, &(mips_parms::mips_isa::fields[16])},
+  {"rs", 5, 10, 2, 0, 0, &(mips_parms::mips_isa::fields[17])},
+  {"rt", 5, 15, 3, 0, 0, &(mips_parms::mips_isa::fields[18])},
+  {"rd", 5, 20, 4, 0, 0, &(mips_parms::mips_isa::fields[19])},
+  {"constant", 8, 28, 10, 0, 0, &(mips_parms::mips_isa::fields[20])},
+  {"sel", 3, 31, 11, 0, 0, NULL}
 };
 
 ac_dec_format mips_parms::mips_isa::formats[mips_parms::AC_DEC_FORMAT_NUMBER] = {
   {1, "Type_R", 32, &(mips_parms::mips_isa::fields[0]), &(mips_parms::mips_isa::formats[1])},
   {2, "Type_I", 32, &(mips_parms::mips_isa::fields[6]), &(mips_parms::mips_isa::formats[2])},
   {3, "Type_J", 32, &(mips_parms::mips_isa::fields[10]), &(mips_parms::mips_isa::formats[3])},
-  {4, "Type_S", 32, &(mips_parms::mips_isa::fields[12]), NULL}
+  {4, "Type_S", 32, &(mips_parms::mips_isa::fields[12]), &(mips_parms::mips_isa::formats[4])},
+  {5, "Type_C", 32, &(mips_parms::mips_isa::fields[15]), NULL}
 };
 
 ac_dec_list mips_parms::mips_isa::dec_list[mips_parms::AC_DEC_LIST_NUMBER] = {
@@ -400,7 +407,13 @@ ac_dec_list mips_parms::mips_isa::dec_list[mips_parms::AC_DEC_LIST_NUMBER] = {
   {"func", 6, 0, NULL},
   {"op", 1, 19, &(mips_parms::mips_isa::dec_list[357])},
   {"shamt", 5, 0, &(mips_parms::mips_isa::dec_list[358])},
-  {"func", 6, 8, NULL}
+  {"func", 6, 8, NULL},
+  {"op", 1, 16, &(mips_parms::mips_isa::dec_list[360])},
+  {"rs", 2, 0, &(mips_parms::mips_isa::dec_list[361])},
+  {"constant", 10, 0, NULL},
+  {"op", 1, 16, &(mips_parms::mips_isa::dec_list[363])},
+  {"rs", 2, 4, &(mips_parms::mips_isa::dec_list[364])},
+  {"constant", 10, 0, NULL}
 };
 
 ac_dec_instr mips_parms::mips_isa::instructions[mips_parms::AC_DEC_INSTR_NUMBER] = {
@@ -541,7 +554,9 @@ ac_dec_instr mips_parms::mips_isa::instructions[mips_parms::AC_DEC_INSTR_NUMBER]
   {"ldxc1", 4, "ldxc1", "ldxc1 %freg, %reg (%reg)", "Type_R", 135, 1, 1, 1, &(mips_parms::mips_isa::dec_list[347]), 0, &(mips_parms::mips_isa::instructions[135])},
   {"sdxc1", 4, "sdxc1", "sdxc1 %freg, %reg (%reg)", "Type_R", 136, 1, 1, 1, &(mips_parms::mips_isa::dec_list[350]), 0, &(mips_parms::mips_isa::instructions[136])},
   {"lwxc1", 4, "lwxc1", "lwxc1 %freg, %reg (%reg)", "Type_R", 137, 1, 1, 1, &(mips_parms::mips_isa::dec_list[353]), 0, &(mips_parms::mips_isa::instructions[137])},
-  {"swxc1", 4, "swxc1", "swxc1 %freg, %reg (%reg)", "Type_R", 138, 1, 1, 1, &(mips_parms::mips_isa::dec_list[356]), 0, NULL}
+  {"swxc1", 4, "swxc1", "swxc1 %freg, %reg (%reg)", "Type_R", 138, 1, 1, 1, &(mips_parms::mips_isa::dec_list[356]), 0, &(mips_parms::mips_isa::instructions[138])},
+  {"mfc0", 4, "mfc0", "mfc0 %reg, %creg, %imm", "Type_C", 139, 1, 1, 1, &(mips_parms::mips_isa::dec_list[359]), 0, &(mips_parms::mips_isa::instructions[139])},
+  {"mtc0", 4, "mtc0", "mtc0 %reg, %creg %imm", "Type_C", 140, 1, 1, 1, &(mips_parms::mips_isa::dec_list[362]), 0, NULL}
 };
 
 const ac_instr_info
@@ -684,7 +699,9 @@ mips_parms::mips_isa::instr_table[mips_parms::AC_DEC_INSTR_NUMBER + 1] = {
   ac_instr_info(135, "ldxc1", "ldxc1", 4),
   ac_instr_info(136, "sdxc1", "sdxc1", 4),
   ac_instr_info(137, "lwxc1", "lwxc1", 4),
-  ac_instr_info(138, "swxc1", "swxc1", 4)
+  ac_instr_info(138, "swxc1", "swxc1", 4),
+  ac_instr_info(139, "mfc0", "mfc0", 4),
+  ac_instr_info(140, "mtc0", "mtc0", 4)
 };
 
 const unsigned mips_parms::mips_isa::instr_format_table[mips_parms::AC_DEC_INSTR_NUMBER + 1] = {
@@ -826,5 +843,7 @@ const unsigned mips_parms::mips_isa::instr_format_table[mips_parms::AC_DEC_INSTR
   1,
   1,
   1,
-  1
+  1,
+  5,
+  5
 };

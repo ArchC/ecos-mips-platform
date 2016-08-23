@@ -20,7 +20,6 @@
 #include "systemc.h"
 #include "ac_module.H"
 #include "ac_utils.H"
-#include "ac_hltrace.H"
 #include "mips_arch.H"
 #include "mips_isa.H"
 #include "mips_syscall.H"
@@ -28,45 +27,6 @@
 
 class mips: public ac_module, public mips_arch {
 private:
-  typedef struct {
-    uint8_t op;
-    uint8_t rs;
-    uint8_t rt;
-    uint8_t rd;
-    uint8_t shamt;
-    uint8_t func;
-  } T_Type_R;
-
-  typedef struct {
-    uint8_t op;
-    uint8_t rs;
-    uint8_t rt;
-    int16_t imm;
-  } T_Type_I;
-
-  typedef struct {
-    uint8_t op;
-    uint32_t addr;
-  } T_Type_J;
-
-  typedef struct {
-    uint8_t op;
-    uint32_t code;
-    uint8_t func;
-  } T_Type_S;
-
-  typedef struct {
-    bool valid;
-    void* end_rot;
-    unsigned id;
-    union {
-      T_Type_R F_Type_R;
-      T_Type_I F_Type_I;
-      T_Type_J F_Type_J;
-      T_Type_S F_Type_S;
-    };
-  } DecCacheItem ;
-
   sc_time time_1cycle;
   sc_time time_4cycle;
 
@@ -78,8 +38,7 @@ public:
   //!Address of Interpretation Routines.
   void** IntRoutine;
 
-  DecCacheItem* DEC_CACHE;
-  DecCacheItem* instr_dec;
+  unsigned* ins_cache;
   bool start_up;
 
   //!Dispatch Method.
@@ -100,10 +59,6 @@ public:
     start_up=1;
     id.write(globalId++);
     set_proc_freq(1000/module_period_ns);
-  }
-
-  void init_dec_cache() {
-    DEC_CACHE = (DecCacheItem*) calloc(sizeof(DecCacheItem), (dec_cache_size));
   }
 
   void set_proc_freq(unsigned int proc_freq);

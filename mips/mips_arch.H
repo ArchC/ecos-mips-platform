@@ -18,11 +18,11 @@
 
 #include  "mips_parms.H"
 #include  "ac_arch_dec_if.H"
-#include  "ac_mem.H"
+#include  "ac_storage.H"
 #include  "ac_memport.H"
 #include  "ac_regbank.H"
-#include  "ac_tlm_port.H"
 #include  "ac_reg.H"
+#include  "ac_tlm_port.H"
  
 //!ArchC class for model-specific architectural resources.
 
@@ -37,6 +37,7 @@ public:
   ac_memport<mips_parms::ac_word, mips_parms::ac_Hword> DM_mport;
   ac_regbank<32, mips_parms::ac_word, mips_parms::ac_Dword> RB;
   ac_regbank<32, mips_parms::ac_word, mips_parms::ac_Dword> RBF;
+  ac_regbank<256, mips_parms::ac_word, mips_parms::ac_Dword> C0_RB;
   ac_reg<mips_parms::ac_word> npc;
   ac_reg<mips_parms::ac_word> hi;
   ac_reg<mips_parms::ac_word> lo;

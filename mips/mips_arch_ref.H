@@ -37,6 +37,7 @@ public:
   ac_memport<mips_parms::ac_word, mips_parms::ac_Hword>& DM;
   ac_regbank<32, mips_parms::ac_word, mips_parms::ac_Dword>& RB;
   ac_regbank<32, mips_parms::ac_word, mips_parms::ac_Dword>& RBF;
+  ac_regbank<256, mips_parms::ac_word, mips_parms::ac_Dword>& C0_RB;
   ac_reg<mips_parms::ac_word>& npc;
   ac_reg<mips_parms::ac_word>& hi;
   ac_reg<mips_parms::ac_word>& lo;

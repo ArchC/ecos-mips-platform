@@ -1,6 +1,4 @@
 /**
- *            Jainesh Doshi
- *
  *            The ArchC Team
  *            http://www.archc.org/
  *
@@ -14,13 +12,14 @@
 
 AC_ISA(mips){
   ac_helper {
-    #include "mips_isa_helper.H"
+#include "mips_isa_helper.H"
   };
 
   ac_format Type_R  = "%op:6 %rs:5 %rt:5 %rd:5 %shamt:5 %func:6";
   ac_format Type_I  = "%op:6 %rs:5 %rt:5 %imm:16:s";
   ac_format Type_J  = "%op:6 %addr:26";
   ac_format Type_S  = "%op:6 %code:20 %func:6";
+  ac_format Type_C  = "%op:6 %rs:5 %rt:5 %rd:5 %constant:8 %sel:3";
 
   // mips-I
   ac_instr<Type_I> lb, lbu, lh, lhu, lw, lwl, lwr;
@@ -68,21 +67,29 @@ AC_ISA(mips){
   // FPU instructions - mips32r2
   ac_instr<Type_R> mfhc1, mthc1, ldxc1, sdxc1, lwxc1, swxc1;
 
+  // Coprocessor 0 Register Access Instructions
+  ac_instr<Type_C> mfc0, mtc0;
+
   // gas MIPS specific register names
   ac_asm_map reg {
-     "$"[0..31] = [0..31];
-     "$zero" = 0;
-     "$at" = 1;
-     "$kt"[0..1] = [26..27];
-     "$gp" = 28;
-     "$sp" = 29;
-     "$fp" = 30;
-     "$ra" = 31;
+    "$"[0..31] = [0..31];
+    "$zero" = 0;
+    "$at" = 1;
+    "$kt"[0..1] = [26..27];
+    "$gp" = 28;
+    "$sp" = 29;
+    "$fp" = 30;
+    "$ra" = 31;
   }
 
   // Floating-point register names
   ac_asm_map freg {
-     "$f"[0..31] = [0..31];
+    "$f"[0..31] = [0..31];
+  }
+
+  // Coprocessor0 register names
+  ac_asm_map creg {
+    "$k"[0..31] = [0..31];
   }
 
   ISA_CTOR(mips){
@@ -469,6 +476,9 @@ AC_ISA(mips){
     divs.set_asm("div.s %freg, %freg, %freg", shamt, rd, rt);
     divs.set_decoder(op=0x11, rs=16, func=0x03);
 
+    mfc0.set_asm("mfc0 %reg, %creg, %imm", rt, rd, sel);
+    mfc0.set_decoder(op=0x10, rs=0x00, constant=0x00);
+
     mfc1.set_asm("mfc1 %reg, %freg", rt, rd);
     mfc1.set_decoder(op=0x11, rs=0x00, shamt=0x0, func=0x0);
 
@@ -483,6 +493,9 @@ AC_ISA(mips){
 
     muls.set_asm("mul.s %freg, %freg, %freg", shamt, rd, rt);
     muls.set_decoder(op=0x11, rs=16, func=0x02);
+
+    mtc0.set_asm("mtc0 %reg, %creg %imm", rt, rd, sel);
+    mtc0.set_decoder(op=0x10, rs=0x04, constant=0x00);
 
     mtc1.set_asm("mtc1 %reg, %freg", rt, rd);
     mtc1.set_decoder(op=0x11, rs=0x4, shamt=0x0, func=0x0);
@@ -627,8 +640,8 @@ AC_ISA(mips){
     }
 
     pseudo_instr("lw %reg, %exp (%reg)") {
- /* this should be 'li %0, %1', but 'li' is a conditional pseudo in gas :/
-  - this only works when %exp < 2^16-1 - should be enough for validation */
+      /* this should be 'li %0, %1', but 'li' is a conditional pseudo in gas :/
+       - this only works when %exp < 2^16-1 - should be enough for validation */
       "lui  %0, %1";
       "addu %0, %0, %2";
       "lw   %0, (%0)";
