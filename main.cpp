@@ -38,10 +38,11 @@ int sc_main(int ac, char *av[])
   ac_trace("mips1_proc1.trace");
 #endif 
 
-  mips_proc1.DM_port(bus.target_export);
+  mips_proc1.DM(bus.target_export);
   bus.MEM_port(mem.target_export);
 
   mips_proc1.init(ac, av);
+  mips_proc1.set_prog_args();
   cerr << endl;
 
   sc_start();

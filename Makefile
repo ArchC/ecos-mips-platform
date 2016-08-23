@@ -8,11 +8,11 @@ OBJS := $(SRCS:.cpp=.o)
 COMPONENTS := mips memory bus
 HOST_OS := linux64
 
-export LIB_DIR:= `pkg-config --libs systemc` `pkg-config --libs archc` \
+export LIB_DIR:= `pkg-config --libs systemc` `pkg-config --libs archc`\
 				$(foreach c, $(COMPONENTS), -L $(c))
 
 
-export INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` \
+export INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` `pkg-config --cflags tlm` \
 					$(foreach c, $(COMPONENTS), -I $(c)) 
 
 export LIBS:= $(foreach c, $(COMPONENTS), -l$(c)) -lsystemc -larchc -lm

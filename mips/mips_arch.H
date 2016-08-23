@@ -21,6 +21,7 @@
 #include  "ac_mem.H"
 #include  "ac_memport.H"
 #include  "ac_regbank.H"
+#include  "ac_tlm_port.H"
 #include  "ac_reg.H"
  
 //!ArchC class for model-specific architectural resources.
@@ -32,7 +33,7 @@ public:
   ac_reg<unsigned> ac_pc;
 
   //!Storage Devices.
-  ac_mem DM;
+  ac_tlm_port DM;
   ac_memport<mips_parms::ac_word, mips_parms::ac_Hword> DM_mport;
   ac_regbank<32, mips_parms::ac_word, mips_parms::ac_Dword> RB;
   ac_regbank<32, mips_parms::ac_word, mips_parms::ac_Dword> RBF;
