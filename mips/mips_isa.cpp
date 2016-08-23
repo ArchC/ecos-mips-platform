@@ -1,5 +1,33 @@
-// @file      mips_isa.cpp
-// @brief     The ArchC MIPS functional model.
+/**
+ * @file      mips_isa.cpp
+ * @author    Jainesh Doshi
+ *
+ * @author    The ArchC Team
+ *            http://www.archc.org/
+ *
+ *            Computer Systems Laboratory (LSC)
+ *            IC-UNICAMP
+ *            http://www.lsc.ic.unicamp.br/
+ *
+ * @version   0.1
+ * @date      Sun, 02 Apr 2006 08:07:46 -0200
+ *
+ * @brief     The ArchC MIPS functional model.
+ *
+ * @attention Copyright (C) 2002-2005 --- The ArchC Team
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Lesser General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2.1 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *
+ */
 
 #include  "mips_isa.H"
 #include  "mips_isa_init.cpp"

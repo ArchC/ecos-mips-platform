@@ -1,6 +1,7 @@
 /**
  * @file      memory.h
  * @author    Bruno de Carvalho Albertini
+ *			      Jainesh Doshi
  *
  * @author    The ArchC Team
  *            http://www.archc.org/

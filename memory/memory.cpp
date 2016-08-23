@@ -1,6 +1,7 @@
 /**
  * @file      memory.cpp
  * @author    Bruno de Carvalho Albertini
+ *            Jainesh Doshi
  *
  * @author    The ArchC Team
  *            http://www.archc.org/
