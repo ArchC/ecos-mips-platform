@@ -1,14 +1,4 @@
-# Variable that points to SystemC installation path
-export SYSTEMC:=/home/staff/rodolfo/mc723/systemc
-export LD_LIBRARY_PATH:=/home/staff/rodolfo/mc723/systemc/lib-linux64:$(LD_LIBRARY_PATH)
 
-# Variable that points to TLM installation path
-export TLM_PATH:=/home/staff/rodolfo/mc723/systemc/include
-
-# Variable that points to ArchC installation path
-export ARCHC_PATH:=/home/staff/rodolfo/mc723/archc
-
-export PATH:=/home/staff/rodolfo/compilers/bin:$(PATH)
 
 TARGET=platform
 EXE = $(TARGET).x
@@ -18,14 +8,12 @@ OBJS := $(SRCS:.cpp=.o)
 COMPONENTS := mips memory bus
 HOST_OS := linux64
 
-export LIB_DIR:=-L $(SYSTEMC)/lib-$(HOST_OS) \
-		-L $(ARCHC_PATH)/lib \
-		$(foreach c, $(COMPONENTS), -L $(c))
+export LIB_DIR:= `pkg-config --libs systemc` `pkg-config --libs archc` \
+				$(foreach c, $(COMPONENTS), -L $(c))
 
-export INC_DIR:=-I $(SYSTEMC)/include \
-		-I $(ARCHC_PATH)/include/archc \
-		-I $(TLM_PATH) \
-		$(foreach c, $(COMPONENTS), -I $(c)) 
+
+export INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` \
+					$(foreach c, $(COMPONENTS), -I $(c)) 
 
 export LIBS:= $(foreach c, $(COMPONENTS), -l$(c)) -lsystemc -larchc -lm
 
@@ -34,7 +22,6 @@ export LIBFILES:= $(foreach c, $(COMPONENTS), $(c)/lib$(c).a)
 export CFLAGS:=-g
 
 export CC:=g++
-
 
 
 all: 

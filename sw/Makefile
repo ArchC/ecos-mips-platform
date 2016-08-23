@@ -2,7 +2,7 @@
 # Hello World
 # ####################################################
 
-CC = mips-elf-gcc
+CC = mips-newlib-elf-gcc
 CFLAGS = -msoft-float -specs=archc
 LDFLAGS = -lm
 
