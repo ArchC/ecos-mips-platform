@@ -20,28 +20,29 @@ const char *archc_version="2.0beta1";
 const char *archc_options="-abi -dy ";
 
 #include <systemc.h>
-#include "mips.H"
-#include "memory.h"
-#include "bus.h"
+#include "mips/mips.H"
+#include "memory/memory.h"
+#include "bus/bus.h"
 
-int sc_main(int ac, char *av[])
+  int sc_main(int ac, char *av[])
 {
 
   //!  ISA simulator
   mips mips_proc1("mips");
   //! Bus
   ac_tlm_bus bus("bus");
-// Memory
+  // Memory
   ac_tlm_mem mem("mem");
 
 #ifdef AC_DEBUG
   ac_trace("mips1_proc1.trace");
 #endif 
 
-  mips_proc1.DM_port(bus.target_export);
+  mips_proc1.DM(bus.target_export);
   bus.MEM_port(mem.target_export);
 
   mips_proc1.init(ac, av);
+  mips_proc1.set_prog_args();
   cerr << endl;
 
   sc_start();

@@ -1,6 +1,7 @@
 /**
  * @file      memory.cpp
  * @author    Bruno de Carvalho Albertini
+ *            Jainesh Doshi
  *
  * @author    The ArchC Team
  *            http://www.archc.org/
@@ -65,9 +66,9 @@ ac_tlm_mem::~ac_tlm_mem() {
   * @param d id the data being write
   * @returns A TLM response packet with SUCCESS
 */
-ac_tlm_rsp_status ac_tlm_mem::writem( const uint32_t &a , const uint32_t &d )
+ac_tlm_rsp_status ac_tlm_mem::writem( const uint32_t &address , const uint32_t &data )
 {
-  *((uint32_t *) &memory[a]) = *((uint32_t *) &d);
+  *((uint32_t *) &memory[address]) = *((uint32_t *) &data);
   return SUCCESS;
 }
 
@@ -77,11 +78,10 @@ ac_tlm_rsp_status ac_tlm_mem::writem( const uint32_t &a , const uint32_t &d )
   * @param d id the data that will be read
   * @returns A TLM response packet with SUCCESS and a modified d
 */
-ac_tlm_rsp_status ac_tlm_mem::readm( const uint32_t &a , uint32_t &d )
+ac_tlm_rsp_status ac_tlm_mem::readm( const uint32_t &address , uint32_t &data )
 {
-  *((uint32_t *) &d) = *((uint32_t *) &memory[a]);
-
-  return SUCCESS;
+	*((uint32_t *) &data) = *((uint32_t *) &memory[address]);
+	return SUCCESS;
 }
 
 
