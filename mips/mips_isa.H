@@ -120,6 +120,7 @@ public:
   inline __attribute__((always_inline)) void behavior_jal(uint8_t op, uint32_t addr);
   inline __attribute__((always_inline)) void behavior_jr(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t shamt, uint8_t func);
   inline __attribute__((always_inline)) void behavior_jalr(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t shamt, uint8_t func);
+  inline __attribute__((always_inline)) void behavior_b(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
   inline __attribute__((always_inline)) void behavior_beq(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
   inline __attribute__((always_inline)) void behavior_bne(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
   inline __attribute__((always_inline)) void behavior_blez(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
@@ -132,6 +133,7 @@ public:
   inline __attribute__((always_inline)) void behavior_sys_call(uint8_t op, uint32_t code, uint8_t func);
   inline __attribute__((always_inline)) void behavior_eret(uint8_t op, uint32_t code, uint8_t func);
   inline __attribute__((always_inline)) void behavior_deret(uint8_t op, uint32_t code, uint8_t func);
+  inline __attribute__((always_inline)) void behavior_cache(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);
   inline __attribute__((always_inline)) void behavior_sync(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t shamt, uint8_t func);
   inline __attribute__((always_inline)) void behavior_teq(uint8_t op, uint8_t rs, uint8_t rt, uint8_t rd, uint8_t shamt, uint8_t func);
   inline __attribute__((always_inline)) void behavior_ll(uint8_t op, uint8_t rs, uint8_t rt, int16_t imm);

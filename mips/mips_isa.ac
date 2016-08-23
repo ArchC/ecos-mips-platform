@@ -32,9 +32,10 @@ AC_ISA(mips){
   ac_instr<Type_R> mfhi, mthi, mflo, mtlo;
   ac_instr<Type_J> j, jal;
   ac_instr<Type_R> jr, jalr;
-  ac_instr<Type_I> beq, bne, blez, bgtz, bltz, bgez, bltzal, bgezal;
+  ac_instr<Type_I> b, beq, bne, blez, bgtz, bltz, bgez, bltzal, bgezal;
   ac_instr<Type_R> instr_break;
   ac_instr<Type_S> sys_call, eret, deret;
+  ac_instr<Type_I> cache;
 
   // mips-II
   ac_instr<Type_R> sync, teq;
@@ -304,6 +305,9 @@ AC_ISA(mips){
     jalr.set_asm("jalr %reg", rs, rd="$ra");
     jalr.set_asm("jal  %reg", rs, rd="$ra"); // gas
     jalr.set_decoder(op=0x00, func= 0x09);
+
+    b.set_asm("b %exp(pcrel)", imm);
+    b.set_decoder(op=0x04, rs=0x00, rt=0x00);
 
     beq.set_asm("beq %reg, %reg, %exp(pcrel)", rs, rt, imm);
     beq.set_asm("b %exp(pcrel)", imm, rs=0, rt=0);        // gas
@@ -589,6 +593,9 @@ AC_ISA(mips){
 
     deret.set_asm("deret %imm", code);
     deret.set_decoder(op=0x10, func=0x1f);
+
+    cache.set_asm("cache %reg, %imm (%reg)", rs, imm, rt);
+    cache.set_decoder(op=0x2f);
 
     pseudo_instr("li %reg, %imm") {
       "lui %0, \%hi(%1)";

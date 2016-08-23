@@ -994,6 +994,17 @@ void ac_behavior( jalr )
   dbg_printf("Return = %#x\n", ac_pc+4);
 }
 
+void ac_behavior( b )
+{
+  dbg_printf("b %d\n",imm & 0xFFFF);
+  if( RB[0] == RB[0] ){
+#ifndef NO_NEED_PC_UPDATE
+    npc = ac_pc + (imm<<2);
+#endif
+    dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+  }
+}
+
 void ac_behavior( beq )
 {
   dbg_printf("beq r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
@@ -1427,3 +1438,46 @@ void ac_behavior( eret )
 #endif
   dbg_printf("Returned PC = %#x\n", temp);
 }
+
+void ac_behavior( cache )
+{
+  dbg_printf("cache sub-opcode=%d, base_reg=r%d, offset=%d\n", rs, rt, imm & 0xFFFF);
+
+  int value = (0x0000FFFF & imm);
+  int mask = 0x00008000;
+  if (mask & imm) {
+    value += 0xFFFF0000;
+  }
+  uint32_t vAddr = RB[rt] + value;
+//  uint32_t vAddr = RB[rt] + sign_extend(imm);
+
+
+//  uint32_t pAddr = Address_Translation(vAddr);
+    uint32_t pAddr = vAddr;
+    if((rs & 28)>>2 == 2){
+      if((rs & 3) == 0 || (rs & 3) == 1){
+        //! Write the tag for the cache block at the specified index from the
+        //! TagLo and TagHi Coprocessor 0 registers.
+      }
+    }
+    dbg_printf("Cache operation called \n");
+}
+
+
+/*
+uint32_t Address_Translation(uint32_t virtual_address){
+ //! Done by MMU in this case
+ uint32_t physical_address = virtual_address;
+ return physical_address;
+}
+*/
+/*
+int sign_extend(int16_t number) {
+ int value = (0x0000FFFF & number);
+ int mask = 0x00008000;
+ if (mask & number) {
+   value += 0xFFFF0000;
+ }
+ return value;
+}
+*/

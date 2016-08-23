@@ -28,7 +28,7 @@ all:
 	$(MAKE) $(EXE)
 
 clean:
-	for c in $(COMPONENTS); do echo " => Making" $$c ...; \
+	for c in $(COMPONENTS); do echo " => Cleaning" $$c ...; \
 	    cd $$c; $(MAKE) clean; cd ..; done	
 	echo " => Cleaning platform ..."
 	rm -f $(OBJS) $(EXE) *~ *.o
