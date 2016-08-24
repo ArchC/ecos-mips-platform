@@ -1,7 +1,7 @@
 /**
- * \file leon_cpu_helper.H                 				
+ * \file mips_cpu_helper.H                 				
  *															
- * \brief LEON-3/SPARC v8 CPU helper file.                			
+ * \brief MIPS32r2 CPU helper file.                			
  * 												            
  * \author											    
  *  Rogerio Alves Cardoso								    
@@ -31,16 +31,16 @@
  *															
  **/
 
-#ifndef _LEON_3_CPU_HELPER_H
-#define _LEON_3_CPU_HELPER_H
+#ifndef _MIPS_CPU_HELPER_H
+#define _MIPS_CPU_HELPER_H
 
 #define DEFAULT_STACK_SIZE (256*1024)//!<Default stack size
 #define FLUSH_NOP
 //#define PRINT_INSTRUCTION //!< Will print instruction. NOTE: will slow down simulation
 #define WITH_SRMMU //!< defines if MMU is attached to processor
 
-#define RAM_START_ADDR 0x40000000    //!<RAM Start address 
-#define NWINDOWS 8                   //!<Default Leon register window size
+#define RAM_START_ADDR 0x00000000    //!<RAM Start address 
+#define NWINDOWS 8                   //!<Default mips register window size
 
 //!Bit manipulation macros
 #define bit(x,n) (((x) >> n) & 1)
