@@ -2,3 +2,5 @@
 *.a
 *.x
 *.mips
+install/
+env.sh
