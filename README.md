@@ -12,7 +12,14 @@ Also if you want to execute more programs on the model, please install the eCos 
 * Open a terminal and navigate to the ```ecos-mips-platform``` folder and type in the followng commands:
 
 ```bash
+# Update the git submodules, compile and install them 
+./builddeps.sh
+# sorce the ArchC environment
+source env.sh
+
+# Compile the platform
 make
+# Execute the platform
 ./platform.x -- sw/hello_custom.elf
 ```
 * When ``waiting for connection on port...`` appears on the current terminal, open a new terminal and type:
