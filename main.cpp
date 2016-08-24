@@ -24,6 +24,9 @@ const char *archc_options="-abi -dy ";
 #include "mmu/mmu.h"
 #include "memory/memory.h"
 #include "bus/bus.h"
+#include "irqmp/irqmp.h"
+
+using grlib::irqmp;
 
 int sc_main(int ac, char *av[])
 {
@@ -33,7 +36,7 @@ int sc_main(int ac, char *av[])
   //!  ISA simulator
   cout << "Creating Processor" << endl;
   mips mips_proc1("mips");
-  //! mmu
+  //! MMU
   cout << "Creating mmu" << endl;
   ac_tlm_mmu mmu("mmu");
   //! Bus
@@ -42,14 +45,25 @@ int sc_main(int ac, char *av[])
   //! Memory
   cout << "Creating Memory" << endl;
   ac_tlm_mem mem("mem");
+  //! Interrupt Control Unit
+  cout << "Creating Interrupt Controller" << endl;
+  irqmp irq("irq");
 
 #ifdef AC_DEBUG
   ac_trace("mips1_proc1.trace");
 #endif 
 
+  // CPU interrupt port
+  irq.CPU_port[0](mips_proc1.intp);
+
+  // Clock connections with Peripherals
+  irq.clk(p_clock);
+
   mips_proc1.DM(mmu.target_export);
+  mips_proc1.ack_port(irq.target_export);
   mmu.BUS_port(bus.target_export);
   bus.MEM_port(mem.target_export);
+  bus.IRQ_port(irq.target_export);
 
   mips_proc1.init(ac, av);
   mips_proc1.set_prog_args();

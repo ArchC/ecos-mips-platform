@@ -28,3 +28,4 @@ make
 nc localhost 6000
 ```
 
+* Note that the Interrupt Controller Unit has only been routed to the system in this commit. It has not been configred for this system. 

@@ -24,7 +24,8 @@
 #include  "ac_reg.H"
 #include  "ac_tlm_port.H"
 #include  "ac_tlm_intr_port.H"
- 
+#include "ac_tlm_signal_port.H"
+
 //!ArchC class for model-specific architectural resources.
 
 class mips_arch : public ac_arch_dec_if<mips_parms::ac_word, mips_parms::ac_Hword> {

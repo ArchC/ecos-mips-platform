@@ -57,7 +57,13 @@ public:
   sc_event wake;
 
   //!Constructor.
-  mips( sc_module_name name_ ): ac_module(name_), mips_arch(), ISA(*this), intp_hnd(*this), intp("intp", intp_hnd) {
+  mips( sc_module_name name_ ): 
+    ac_module(name_), 
+    mips_arch(), 
+    ISA(*this), 
+    intp_hnd(*this),
+    intp("intp", intp_hnd) 
+  {
     SC_THREAD( behavior );
     sensitive << wake;
     has_delayed_load = false; 
