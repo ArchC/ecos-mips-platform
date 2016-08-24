@@ -45,7 +45,8 @@ ac_tlm_bus::ac_tlm_bus(sc_module_name module_name):
   sc_module(module_name),
   target_export("iport"),
   MEM_port("MEM_port", 536870912U), // This is the memory port, assigned for 512MB
-  IRQ_port("IRQ_port", 0U)
+  GPTIMER_port("GPTIMER_port", 0U),  // Port that connects to the timer unit
+  IRQ_port("IRQ_port", 0U)  // Port connecting to the External Interrupt Controller Unit
 {
     /// Binds target_export to the memory
     target_export(*this);
@@ -68,7 +69,11 @@ ac_tlm_rsp ac_tlm_bus::transport(const ac_tlm_req &request)
     response = MEM_port->transport(request);
     return response;
   } 
+
   //! Route addresses going to IRQ from here 
+
+  //! Route addresses going to Timer from here 
+
   else {
     cerr<<"\n Error:trying to access address outside of allowed memory : " << request.addr << endl;
   }

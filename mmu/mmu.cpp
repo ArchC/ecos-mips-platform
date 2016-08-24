@@ -99,6 +99,11 @@ ac_tlm_rsp ac_tlm_mmu::transport(const ac_tlm_req &request)
     response = BUS_port->transport(req);
     return response;
   }
+
+  //! Identify addresses going to IRQ from here and make appropriate changes for bus module to recognize it 
+
+  //! Identify addresses going to Timer from here and make appropriate changes for bus module to recognize it 
+
   else {
     // Actual memory accessed
 #ifndef MMU_DEBUG

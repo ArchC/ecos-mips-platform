@@ -3,7 +3,7 @@ EXE = $(TARGET).x
 
 SRCS := main.cpp
 OBJS := $(SRCS:.cpp=.o)
-COMPONENTS := mips memory bus mmu irqmp
+COMPONENTS := mips memory bus mmu irqmp gptimer
 
 
 

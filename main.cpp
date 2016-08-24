@@ -25,8 +25,10 @@ const char *archc_options="-abi -dy ";
 #include "memory/memory.h"
 #include "bus/bus.h"
 #include "irqmp/irqmp.h"
+#include "gptimer/gptimer.h"
 
 using grlib::irqmp;
+using grlib::gptimer;
 
 int sc_main(int ac, char *av[])
 {
@@ -48,6 +50,9 @@ int sc_main(int ac, char *av[])
   //! Interrupt Control Unit
   cout << "Creating Interrupt Controller" << endl;
   irqmp irq("irq");
+  //! GPtimer Frequency 40Hz
+  cout << "Creating Timer" << endl;
+  gptimer timer("timer",40);
 
 #ifdef AC_DEBUG
   ac_trace("mips1_proc1.trace");
@@ -57,13 +62,18 @@ int sc_main(int ac, char *av[])
   irq.CPU_port[0](mips_proc1.intp);
 
   // Clock connections with Peripherals
+  timer.clk(p_clock);
   irq.clk(p_clock);
+
+  // Peripherals connected to Interrupt Controller by ports
+  timer.IRQ_port(irq.target_export);
 
   mips_proc1.DM(mmu.target_export);
   mips_proc1.ack_port(irq.target_export);
   mmu.BUS_port(bus.target_export);
   bus.MEM_port(mem.target_export);
   bus.IRQ_port(irq.target_export);
+  bus.GPTIMER_port(timer.target_export);
 
   mips_proc1.init(ac, av);
   mips_proc1.set_prog_args();
