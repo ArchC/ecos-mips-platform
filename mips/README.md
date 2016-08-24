@@ -1,6 +1,8 @@
 mips32r2 ArchC functional model
 =====
 
+* For this project at this commit, if you want to add any new instructions to the mips model, include their format in the mips_isa.ac file and their definition in the mips_isa.cpp file appropriately. Use ```acsim mips.ac -abi -ndc -npv``` to generate the mips model files. 
+
 This is the mips32r2 ArchC functional model.
 
 Current status
