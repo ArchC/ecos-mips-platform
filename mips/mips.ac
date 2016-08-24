@@ -24,6 +24,8 @@
 AC_ARCH(mips){
 
   ac_tlm_port DM:512M;
+  // Port conected to External IRQ
+  ac_tlm_intr_port intp;
   ac_regbank RB:32;
   ac_regbank RBF:32;
   ac_regbank C0_RB:256;

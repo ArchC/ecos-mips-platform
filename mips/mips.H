@@ -23,6 +23,8 @@
 #include "mips_arch.H"
 #include "mips_isa.H"
 #include "mips_syscall.H"
+#include "ac_tlm_intr_port.H"
+#include "mips_intr_handlers.H"
 
 
 class mips: public ac_module, public mips_arch {
@@ -35,6 +37,9 @@ public:
   bool has_delayed_load;
   char* delayed_load_program;
   mips_parms::mips_isa ISA;
+  mips_intp_handler intp_hnd;
+  ac_tlm_intr_port intp;
+
   //!Address of Interpretation Routines.
   void** IntRoutine;
 
@@ -52,7 +57,7 @@ public:
   sc_event wake;
 
   //!Constructor.
-  mips( sc_module_name name_ ): ac_module(name_), mips_arch(), ISA(*this) {
+  mips( sc_module_name name_ ): ac_module(name_), mips_arch(), ISA(*this), intp_hnd(*this,&wake), intp("intp", intp_hnd) {
     SC_THREAD( behavior );
     sensitive << wake;
     has_delayed_load = false; 

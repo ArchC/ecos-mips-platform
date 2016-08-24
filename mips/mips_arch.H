@@ -23,6 +23,7 @@
 #include  "ac_regbank.H"
 #include  "ac_reg.H"
 #include  "ac_tlm_port.H"
+#include  "ac_tlm_intr_port.H"
  
 //!ArchC class for model-specific architectural resources.
 
@@ -43,6 +44,8 @@ public:
   ac_reg<mips_parms::ac_word> lo;
   ac_reg<mips_parms::ac_word> id;
   ac_reg<mips_parms::ac_word> cc;
+#define SLEEP_AWAKE_MODE
+  ac_reg<mips_parms::ac_word> intr_reg;
 
 
   //!Constructor.

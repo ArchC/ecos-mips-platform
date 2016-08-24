@@ -19,6 +19,14 @@
 #include  "mips_syscall.H"
 
 void* mips::dispatch() {
+  /*************************************************************************************/
+  /* SLEEP / AWAKE mode control                                                        */
+  /* intr_reg may store 1 (AWAKE MODE) or 0 (SLEEP MODE) - default is AWAKE            */
+  /* if intr_reg == 0, the simulator will be suspended until it happens the wake event */
+  /* wake - this event will happen in the moment the processor receives and            */
+  /* interrupt with code AWAKE (1)                                                     */
+  /*************************************************************************************/
+  if (intr_reg.read() == 0)  wait(wake);
   //!Updating Regs for behavioral simulation.
   if (ac_qk.need_sync()) {
     ac_qk.sync();

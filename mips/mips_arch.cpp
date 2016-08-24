@@ -28,7 +28,8 @@ mips_arch::mips_arch() :
   hi("hi", 0),
   lo("lo", 0),
   id("id", 0),
-  cc("cc", 0) {
+  cc("cc", 0)
+  ,intr_reg("instr_reg",1) {
 
   ac_mt_endian = mips_parms::AC_MATCH_ENDIAN;
   ac_tgt_endian = mips_parms::AC_PROC_ENDIAN;
