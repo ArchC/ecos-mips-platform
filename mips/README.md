@@ -1,7 +1,9 @@
 mips32r2 ArchC functional model
 =====
 
-* For this project at this commit, if you want to add any new instructions to the mips model, include their format in the mips_isa.ac file and their definition in the mips_isa.cpp file appropriately. Use ```acsim mips.ac -abi -ndc -npv``` to generate the mips model files. 
+* Please **do not try to recompile the mips model** using the above steps as the **interrupt handling** have been configured to compile the model successfully. You may add new handlers for the interrupts raised but please do not try to recompile the model unless you know how to configure the interrupt handling to the model. 
+
+* If at all you want to add any new instructions to the mips model, include their format in the mips_isa.ac file and their definition in the mips_isa.cpp file appropriately. Use ```acsim mips.ac -abi -ndc -npv``` to generate the mips model files and reconfigure the model appropriately to include interrupt handling. 
 
 This is the mips32r2 ArchC functional model.
 
