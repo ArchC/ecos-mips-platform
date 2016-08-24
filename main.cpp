@@ -26,9 +26,11 @@ const char *archc_options="-abi -dy ";
 #include "bus/bus.h"
 #include "irqmp/irqmp.h"
 #include "gptimer/gptimer.h"
+#include "apbuart/apbuart.h"
 
 using grlib::irqmp;
 using grlib::gptimer;
+using grlib::apbuart;
 
 int sc_main(int ac, char *av[])
 {
@@ -53,6 +55,9 @@ int sc_main(int ac, char *av[])
   //! GPtimer Frequency 40Hz
   cout << "Creating Timer" << endl;
   gptimer timer("timer",40);
+  //! UART serial Unit
+  cout << "Creating UART Serial Unit" << endl;
+  apbuart uart("uart");
 
 #ifdef AC_DEBUG
   ac_trace("mips1_proc1.trace");
@@ -67,6 +72,7 @@ int sc_main(int ac, char *av[])
 
   // Peripherals connected to Interrupt Controller by ports
   timer.IRQ_port(irq.target_export);
+  uart.IRQ_port(irq.target_export);
 
   mips_proc1.DM(mmu.target_export);
   mips_proc1.ack_port(irq.target_export);
@@ -74,6 +80,7 @@ int sc_main(int ac, char *av[])
   bus.MEM_port(mem.target_export);
   bus.IRQ_port(irq.target_export);
   bus.GPTIMER_port(timer.target_export);
+  bus.UART_port(uart.target_export);
 
   mips_proc1.init(ac, av);
   mips_proc1.set_prog_args();

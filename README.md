@@ -28,4 +28,4 @@ make
 nc localhost 6000
 ```
 
-* Note that the Interrupt Controller Unit And the Timer Unit has only been routed to the system now. It has to configred for this system.
+* Note that the Interrupt Controller Unit, Timer Unit and UART module has only been routed to the system now. It has to configred for this system.

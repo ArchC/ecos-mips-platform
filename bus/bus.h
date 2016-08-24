@@ -1,5 +1,5 @@
 /**
- * @file      memory.h
+ * @file      bus.h
  * @author    Bruno de Carvalho Albertini
  *            Jainesh Doshi
  *
@@ -65,6 +65,7 @@ public:
   ac_tlm_port MEM_port;
   ac_tlm_port IRQ_port;
   ac_tlm_port GPTIMER_port;
+  ac_tlm_port UART_port;
 
 
   /**
