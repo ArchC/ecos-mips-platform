@@ -39,7 +39,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 // Uncomment this for the debug model
-#define MMU_DEBUG
+// #define MMU_DEBUG
 
 
 /// Constructor
@@ -104,10 +104,19 @@ ac_tlm_rsp ac_tlm_mmu::transport(const ac_tlm_req &request)
 
   //! Identify addresses going to Timer from here and make appropriate changes for bus module to recognize it 
 
+  else if(request.addr >= 0xBF000900 && request.addr <0xBF000952){
+    //! Atlas Serial UART unit accessed
+    response = BUS_port->transport(request);
+#ifndef MMU_DEBUG
+    cout << "Address to Bus (UART): "<< request.addr << endl;
+#endif
+    return response;
+  }
+
   else {
     // Actual memory accessed
 #ifndef MMU_DEBUG
-//    cout <<"Address requested"<< request.addr << endl;
+   cout <<"Address requested"<< request.addr << endl;
 #endif
     response = BUS_port->transport(request);
     return response;

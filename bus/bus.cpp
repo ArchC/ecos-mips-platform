@@ -75,7 +75,12 @@ ac_tlm_rsp ac_tlm_bus::transport(const ac_tlm_req &request)
 
   //! Route addresses going to Timer from here 
 
-  //! Route addresses going to UART from here 
+  else if(request.addr >= 0xBF000900 && request.addr < 0xBF000952){
+    //! Atlas Serial UART unit accessed
+    // cerr << "\n Accessing UART Serial : " << hex << request.addr << endl;
+    response = UART_port->transport(request);
+    return response;
+  }
 
   else {
     cerr<<"\n Error:trying to access address outside of allowed memory : " << request.addr << endl;
