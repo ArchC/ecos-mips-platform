@@ -1,6 +1,7 @@
 /**
  * \file      apbuart.h
  * \author    Rogerio Alves Cardoso
+ *            Jainesh Doshi
  * 
  *            The ArchC Team
  *            http://www.archc.org/
@@ -9,7 +10,7 @@
  *            IC-UNICAMP
  *            http://www.lsc.ic.unicamp.br/
  *
- * \version   0.2
+ * \version   1.0
  * \brief     Implements the Gaisler UART with APB interface (APBUART)
  * 
  *   This library is free software; you can redistribute it and/or
@@ -24,7 +25,10 @@
 */
 
 #include "apbuart.h" 
+#include <ac_debug_model.H>
 
+// Debug model for ApbUART
+// #define UART_debug
 
 namespace grlib {
 
@@ -39,10 +43,17 @@ apbuart::apbuart(sc_module_name module_name,
   //Binding target export
   target_export( *this );
 
-  DataR        = 0x0;
-  StatusR      = 0x6; //TX Shift Register and TX FIFO empty
-  ControlR     = 0x7; //TX/RX enabled. RX interruption enabled
+  DataR        = 0x00;
+  //TX Shift Register and TX FIFO empty
+  StatusR      = 0x60;
+
+  ControlR     = 0x0  ;
   ScalerR      = 0x0;
+
+  //Received data interrupt enabled
+  //Transmission holding register empty interrupt enabled
+  //receiver line status interrupt enabled
+  InterruptR    = 0x7;
 
    //Wait for socket connection
   fprintf(stderr, "APBUART: waiting for connection on port ...\n");
@@ -77,12 +88,12 @@ void apbuart::uart_receive()
 
       wait(1, SC_MS); //!Sleep for 1ms
 
-      if(plug.data_ready() && (ControlR & RECEIVER_ENABLE)) {
+      if(plug.data_ready() && (InterruptR & RECEIVER_ENABLE)) {
           string data_rxd;
           plug >> data_rxd;
           //Bufferize the received string
           for ( int i=0; i < data_rxd.length(); i++)
-               buffer.push(data_rxd[i]);
+            buffer.push(data_rxd[i]);
           //Write only one char to Holding Register
           DataR = (char) DATA(buffer.front());
           buffer.pop(); //Remove the readed char
@@ -91,7 +102,7 @@ void apbuart::uart_receive()
           StatusR &= ~TRASMITTER_SHIFT_REGISTER_EMPTY;
           StatusR &= ~TRASMITTER_FIFO_EMPTY;
 
-          if(ControlR & RECEIVER_INTERRUPT_ENABLE)
+          if(InterruptR & RECEIVER_INTERRUPT_ENABLE)
             generate_interrupt();
       }
    } //for
@@ -103,7 +114,7 @@ ac_tlm_rsp_status apbuart::uart_transmitter()
   StatusR &= ~TRASMITTER_SHIFT_REGISTER_EMPTY;
   StatusR &= ~TRASMITTER_FIFO_EMPTY; 
   
-  if(ControlR & TRANSMITTER_ENABLE) {
+  if(InterruptR & TRANSMITTER_ENABLE) {
     string data_txd = "";
     data_txd = (char) DATA(DataR);
     plug << data_txd;
@@ -113,7 +124,7 @@ ac_tlm_rsp_status apbuart::uart_transmitter()
     StatusR |= TRASMITTER_FIFO_EMPTY;
     DataR = 0x0;
 
-    if(ControlR & TRANSMITTER_INTERRUPT_ENABLE)
+    if(InterruptR & TRANSMITTER_INTERRUPT_ENABLE)
        generate_interrupt();
   }
   return SUCCESS;
@@ -125,13 +136,22 @@ ac_tlm_rsp apbuart::transport( const ac_tlm_req &request )
 
   switch( request.type ) {
     case WRITE:
-         response.status = uart_write(request.addr, request.data);
+         response.status = uart_write(request.addr, __bswap_32(request.data));
+#ifndef UART_debug
+      dbg_printf("Serial unit write accessed at: 0x%#x, with value = 0x%#x \n", request.addr, __bswap_32(request.data));
+#endif
          return response;
     case READ:
          response.status = uart_read(request.addr, response.data);
+#ifndef UART_debug
+      dbg_printf("Serial unit read accessed at: 0x%#x, with value = 0x%#x \n", request.addr, request.data);
+#endif
          return response;
     default:
          response.status = ERROR;
+#ifndef UART_debug
+      dbg_printf("Serial unit wrongly accessed at: 0x%#x, with value = 0x%#x \n", request.addr, request.data);
+#endif
          return response; 
   }
 }
@@ -142,19 +162,22 @@ ac_tlm_rsp_status apbuart::uart_write(const uint32_t& addr , const uint32_t& dat
   uint32_t internal_address = addr & 0xFF;
 
   switch(internal_address){
-   case DATA_OFFSET:     //!0x0
-    DataR = DATA(data);
-    return uart_transmitter();
-   case STATUS_OFFSET:   //!0x4
-    return SUCCESS;
-   case CONTROL_OFFSET:  //!0x8
-    ControlR = data;
-    return SUCCESS;
-   case SCALER_OFFSET:   //!0xC
-    ScalerR = data;
-    return SUCCESS;
-   default:
-    return ERROR;
+    case DATA_OFFSET:     //!0x0
+      DataR = DATA(data);
+      return uart_transmitter();
+    case STATUS_OFFSET:   //!0x28
+      return SUCCESS;
+    case INTERRUPT_CONTROL_OFFSET:  //!0x08
+      InterruptR = data;
+      return SUCCESS;
+    case CONTROL_OFFSET:  //!0x18
+      ControlR = data;
+      return SUCCESS;
+    case SCALER_OFFSET:   //!0xC
+      ScalerR = data;
+      return SUCCESS;
+    default:
+      return ERROR;
   }
 }
 
@@ -164,36 +187,38 @@ ac_tlm_rsp_status apbuart::uart_read(const uint32_t& addr , uint32_t& data)
   uint32_t internal_address = addr & 0xFF;
 
   switch(internal_address){
-   case DATA_OFFSET:     //!0x0
+    case DATA_OFFSET:     //!0x0
       data = DataR;
       //!if buffer is not empty we read the next char
       if(!buffer.empty())
       {
         DataR = (char) DATA(buffer.front());
         buffer.pop(); //!Remove the readed char
-            if(ControlR & RECEIVER_INTERRUPT_ENABLE)
-        {
+        if(InterruptR & RECEIVER_INTERRUPT_ENABLE) {
           //!Generate a interruption to processor
           generate_interrupt();
          }
-      }else //!buffer is empty
+      } else //!buffer is empty
       {
-          StatusR &= ~DATA_READY;
-          StatusR |= TRASMITTER_SHIFT_REGISTER_EMPTY;
-         StatusR |= TRASMITTER_FIFO_EMPTY;  
-         DataR = 0x0;
+        StatusR &= ~DATA_READY;
+        StatusR |= TRASMITTER_SHIFT_REGISTER_EMPTY;
+        StatusR |= TRASMITTER_FIFO_EMPTY;  
+        DataR = 0x0;
       }
-        return SUCCESS;
-   case STATUS_OFFSET:   //!0x4
+      return SUCCESS;
+    case STATUS_OFFSET:   //!0x28
       data = StatusR;
       return SUCCESS;
-   case CONTROL_OFFSET:  //!0x8
-      data = ControlR;
+    case INTERRUPT_CONTROL_OFFSET:  //!0x08
+      InterruptR = data;
       return SUCCESS;
-   case SCALER_OFFSET:   //!0xC
+    case CONTROL_OFFSET:  //!0x18
+      ControlR = data;
+      return SUCCESS;
+    case SCALER_OFFSET:   //!0xC
       data = ScalerR;
       return SUCCESS;
-   default:
+    default:
       return ERROR;
   }
 }

@@ -1,6 +1,7 @@
 /**
  * \file      apbuart.h
  * \author    Rogerio Alves Cardoso
+ *            Jainesh Doshi
  *
  * \author    The ArchC Team
  *            http://www.archc.org/
@@ -9,7 +10,7 @@
  *            IC-UNICAMP
  *            http://www.lsc.ic.unicamp.br/
  *
- * \version   0.2
+ * \version   1.0
  * \brief     Definition file. 
  *            Implements the Gaisler UART with APB interface IP (APBUART)
  *            
@@ -38,38 +39,52 @@
 #include "ac_tlm_protocol.H"
 #include "ac_tlm_port.H"
 
+//! Configured with atlas_serial.h
+
+//! UART BASE ADDRESS       0xBF000900
+//! 0xBF000400 is the ROM monitor!!
+
+// UART Register offsets
+#define DATA_OFFSET         0x0
+#define STATUS_OFFSET       0x28
+#define INTERRUPT_CONTROL_OFFSET 0x08
+#define CONTROL_OFFSET      0x18
+#define SCALER_OFFSET       0xC
+#define FIFO_DEBUG_OFFSET   0x10
+
 //!< APBUART bit macros
 #define DATA(n)                           (n & 0xFF)
+
+//! Line Status register bits
 #define DATA_READY                        (1 << 0)
-#define TRASMITTER_SHIFT_REGISTER_EMPTY   (1 << 1)
-#define TRASMITTER_FIFO_EMPTY             (1 << 2)
-#define TRANSMITTER_BREAK_RECEIVE         (1 << 3)
-#define OVERRUN                           (1 << 4)
-#define PARITY_ERROR                      (1 << 5)
-#define FRAMING_ERROR                     (1 << 6)
+#define OVERRUN                           (1 << 1)
+#define PARITY_ERROR                      (1 << 2)
+#define FRAMING_ERROR                     (1 << 3)
+#define TRANSMITTER_BREAK_RECEIVE         (1 << 4)
+#define TRASMITTER_SHIFT_REGISTER_EMPTY   (1 << 5)
+#define TRASMITTER_FIFO_EMPTY             (1 << 6)
+
+//! Interrupt Control register bits
+#define RECEIVER_ENABLE                   (1 << 0)
+#define TRANSMITTER_ENABLE                (1 << 1)
+#define RECEIVER_INTERRUPT_ENABLE         (1 << 2)
+#define TRANSMITTER_INTERRUPT_ENABLE      (1 << 3)
+
+
 #define TRANSMITTER_HALF_FULL             (1 << 7)
 #define RECEIVER_HALF_FULL                (1 << 8)
 #define TRANSMITTER_FULL                  (1 << 9)
 #define RECEIVER_FULL                     (1 << 10)
 #define TRANSMITTER_FIFO_COUNT(n)         (n & (0x3f << 20)) >> 20
 #define RECEIVER_FIFO_COUNT(n)            (n & (0x3f << 26)) >> 26
-#define RECEIVER_ENABLE                   (1 << 0)
-#define TRANSMITTER_ENABLE                (1 << 1)
-#define RECEIVER_INTERRUPT_ENABLE         (1 << 2)
-#define TRANSMITTER_INTERRUPT_ENABLE      (1 << 3)
 #define PARITY_SELECT                     (1 << 4)
 #define PARITY_ENABLE                     (1 << 5)
 #define LOOP_BACK_MODE                    (1 << 7)
 #define TRANSMITTER_FIFO_INTERRUPT_ENABLE (1 << 9)
 #define TRANSMITTER_FIFO_RECEIVER_ENABLE  (1 << 10)
-#define SCALER_RELOAD_VALUE(n) (n & 0xFFF)
+#define SCALER_RELOAD_VALUE(n)            (n & 0xFFF)
 
-#define DATA_OFFSET       0x0
-#define STATUS_OFFSET     0x4
-#define CONTROL_OFFSET    0x8
-#define SCALER_OFFSET     0xC
-#define FIFO_DEBUG_OFFSET 0x10
-
+// Modify according to atlas serial
 #define IRQ_SEND_ADDR 0x80000204
 
 using std::queue;
@@ -84,7 +99,8 @@ private:
   
   uint32_t DataR;     //!< Data Register
   uint32_t StatusR;   //!< Status Register
-  uint32_t ControlR;  //!< Control Register
+  uint32_t ControlR;  //!< Line Control Register
+  uint32_t InterruptR;  //!< Interrupt Control Register
   uint32_t ScalerR;   //!< Scaler Register
   uint32_t FIFODebugR; //!< FIFO Debug Register
 

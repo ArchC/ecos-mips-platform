@@ -38,8 +38,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-// Uncomment this for the debug model
-// #define MMU_DEBUG
+// Make this non zero for the debug model
+#define MMU_DEBUG 0
 
 
 /// Constructor
@@ -78,11 +78,24 @@ ac_tlm_rsp ac_tlm_mmu::transport(const ac_tlm_req &request)
     ac_tlm_req req = request;
     req.addr = request.addr - 0x80000000;
 #ifndef MMU_DEBUG
-//    cout << "Actual Address to Bus (Memory): "<< req.addr << endl;
+   cout << "Actual Address to Bus (Memory): "<< hex << req.addr << endl;
 #endif
     response = BUS_port->transport(req);
     return response;
   }
+
+  else if(request.addr >= 0xBF000900 && request.addr <0xBF000952){
+    //! Atlas Serial UART unit accessed
+    response = BUS_port->transport(request);
+#ifndef MMU_DEBUG
+    cout << "Address to Bus (UART): "<< hex << request.addr << endl;
+#endif
+    return response;
+  }
+
+  //! Identify addresses going to IRQ from here and make appropriate changes for bus module to recognize it 
+
+  //! Identify addresses going to Timer from here and make appropriate changes for bus module to recognize it 
 
   else if(request.addr >= 0xA0000000 && request.addr < 0xC0000000){
     //! ksegl 0xA000 0000-BFFF FFFF (512MB):
@@ -94,29 +107,16 @@ ac_tlm_rsp ac_tlm_mmu::transport(const ac_tlm_req &request)
     ac_tlm_req req = request;
     req.addr = request.addr & 0x1FFFFFFF;
 #ifndef MMU_DEBUG
-    cout << "Actual Address to Bus (Memory): "<< req.addr << endl;
+    cout << "Actual Address to Bus (Memory): "<< hex << req.addr << endl;
 #endif
     response = BUS_port->transport(req);
-    return response;
-  }
-
-  //! Identify addresses going to IRQ from here and make appropriate changes for bus module to recognize it 
-
-  //! Identify addresses going to Timer from here and make appropriate changes for bus module to recognize it 
-
-  else if(request.addr >= 0xBF000900 && request.addr <0xBF000952){
-    //! Atlas Serial UART unit accessed
-    response = BUS_port->transport(request);
-#ifndef MMU_DEBUG
-    cout << "Address to Bus (UART): "<< request.addr << endl;
-#endif
     return response;
   }
 
   else {
     // Actual memory accessed
 #ifndef MMU_DEBUG
-   cout <<"Address requested"<< request.addr << endl;
+   cout <<"Address requested"<< hex << request.addr << endl;
 #endif
     response = BUS_port->transport(request);
     return response;

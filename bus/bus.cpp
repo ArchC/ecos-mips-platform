@@ -83,6 +83,6 @@ ac_tlm_rsp ac_tlm_bus::transport(const ac_tlm_req &request)
   }
 
   else {
-    cerr<<"\n Error:trying to access address outside of allowed memory : " << request.addr << endl;
+    cerr<<"\n Error:trying to access address outside of allowed memory : " << hex << request.addr << endl;
   }
 }
