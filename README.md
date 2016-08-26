@@ -1,4 +1,10 @@
-# Platform for teaching purpose #
+# MIPS platform running eCos software
+
+## Google Summer of Code 2016
+
+This project was supported by Google Summer of Code 2016. This is Jainesh Doshi project. You can view his commits using this link: 
+
+https://github.com/ArchC/ecos-mips-platform/commits?author=jaineshdoshi
 
 ## How to use the simple platform? ##
 
